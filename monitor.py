@@ -87,3 +87,60 @@ class ChitateLoga:
 
         print(f"Загружено записей: {len(zapisi)}")
         return zapisi
+
+# Модуль фильтрации и анализа — сортирует записи по уровню
+# Формирует сводку за день с подсчётом ошибок и предупреждений
+
+class AnalizatorLoga:
+    def __init__(self, zapisi):
+        self.zapisi = zapisi
+
+    def filtr_po_urovnyu(self, uroven):
+        # возвращаем только записи нужного уровня
+        return [z for z in self.zapisi if z.uroven == uroven.upper()]
+
+    def filtр_po_vremeni(self, s_chasa, do_chasa):
+        # фильтруем записи по диапазону часов
+        return [
+            z for z in self.zapisi
+            if s_chasa <= z.vremya.hour < do_chasa
+        ]
+
+    def gruppirovat_po_istochniku(self):
+        # группируем ошибки по сервису — удобно для дежурного
+        gruppy = {}
+        for z in self.zapisi:
+            klyuch = z.istochnik or "неизвестно"
+            if klyuch not in gruppy:
+                gruppy[klyuch] = []
+            gruppy[klyuch].append(z)
+        return gruppy
+
+    def svodka_za_den(self):
+        # главный отчёт — выводим статистику за текущий день
+        oshibki = self.filtr_po_urovnyu("ERROR")
+        preduprezhdeniya = self.filtr_po_urovnyu("WARN")
+        info = self.filtr_po_urovnyu("INFO")
+        debug = self.filtr_po_urovnyu("DEBUG")
+
+        print("\n" + "=" * 50)
+        print("  СВОДКА ЛОГА ЗА ДЕНЬ")
+        print("=" * 50)
+        print(f"  Всего записей:      {len(self.zapisi)}")
+        print(f"  ERROR:              {len(oshibki)}")
+        print(f"  WARN:               {len(preduprezhdeniya)}")
+        print(f"  INFO:               {len(info)}")
+        print(f"  DEBUG:              {len(debug)}")
+        print("=" * 50)
+
+        if oshibki:
+            print("\n  ПОСЛЕДНИЕ ОШИБКИ:")
+            for z in oshibki[-5:]:  # показываем последние 5
+                print(f"  {z}")
+
+        if preduprezhdeniya:
+            print("\n  ПОСЛЕДНИЕ ПРЕДУПРЕЖДЕНИЯ:")
+            for z in preduprezhdeniya[-3:]:
+                print(f"  {z}")
+
+        print()
