@@ -144,3 +144,67 @@ class AnalizatorLoga:
                 print(f"  {z}")
 
         print()
+
+# Валидация и точка входа — проверяем данные и запускаем монитор
+# Поддерживает фильтрацию через аргументы командной строки
+
+import sys
+
+MAKS_RAZMER_FAYLA = 50 * 1024 * 1024  # 50 МБ — защита от огромных логов
+
+
+def proverit_razmer_fayla(filepath):
+    razmer = os.path.getsize(filepath)
+    if razmer > MAKS_RAZMER_FAYLA:
+        raise ValueError(
+            f"Файл слишком большой: {razmer // 1024 // 1024} МБ "
+            f"(максимум {MAKS_RAZMER_FAYLA // 1024 // 1024} МБ)"
+        )
+
+
+def proverit_uroven(uroven):
+    if uroven.upper() not in UROVNI:
+        raise ValueError(
+            f"Неверный уровень '{uroven}', доступны: {', '.join(UROVNI)}"
+        )
+    return uroven.upper()
+
+
+def zapustit_monitor(filepath=None, filtr_uroven=None):
+    # точка входа — загружаем лог и выводим отчёт
+    chitatel = ChitateLoga(filepath) if filepath else ChitateLoga()
+
+    try:
+        proverit_razmer_fayla(chitatel.filepath)
+        zapisi = chitatel.zagruzit()
+    except FileNotFoundError as e:
+        print(f"Ошибка: {e}")
+        return
+    except ValueError as e:
+        print(f"Ошибка файла: {e}")
+        return
+
+    if not zapisi:
+        print("Нет записей для анализа")
+        return
+
+    analizator = AnalizatorLoga(zapisi)
+
+    # если передан фильтр — показываем только нужный уровень
+    if filtr_uroven:
+        try:
+            uroven = proverit_uroven(filtr_uroven)
+            otfiltrovanye = analizator.filtr_po_urovnyu(uroven)
+            print(f"\nЗаписи уровня {uroven}: {len(otfiltrovanye)}")
+            for z in otfiltrovanye:
+                print(f"  {z}")
+        except ValueError as e:
+            print(f"Ошибка: {e}")
+    else:
+        analizator.svodka_za_den()
+
+
+if __name__ == "__main__":
+    filepath = sys.argv[1] if len(sys.argv) > 1 else None
+    filtr = sys.argv[2] if len(sys.argv) > 2 else None
+    zapustit_monitor(filepath, filtr)
