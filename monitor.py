@@ -150,7 +150,7 @@ class AnalizatorLoga:
 
 import sys
 
-MAKS_RAZMER_FAYLA = 50 * 1024 * 1024  # 50 МБ — защита от огромных логов
+MAKS_RAZMER_FAYLA = 100 * 1024 * 1024  # 50 МБ — защита от огромных логов
 
 
 def proverit_razmer_fayla(filepath):
