@@ -68,15 +68,20 @@ class MenedzherAlertov:
             return
 
         if alerty:
-            print("\n🚨 АЛЕРТЫ:")
+            print("\n АЛЕРТЫ:")
             print("-" * 45)
             for a in alerty:
                 print(f"  [{a['uroven']}] {a['soobshenie']}")
+                print(f"  Количество за час: {a['kolichestvo']}")
 
         if chastye:
-            print("\n🔁 ЧАСТО ПОВТОРЯЮЩИЕСЯ ОШИБКИ:")
+            print("\n ЧАСТО ПОВТОРЯЮЩИЕСЯ ОШИБКИ:")
             print("-" * 45)
             for msg, count in chastye.items():
                 print(f"  {count}x {msg}")
+                if count >= 10:
+                    print(f"  Критическое количество повторений!")
 
+        print(f"\n  Всего алертов: {len(alerty)}")
+        print(f"  Уникальных ошибок: {len(chastye)}")
         print()
