@@ -48,8 +48,14 @@ class FiltrLoga:
             print("Записей не найдено")
             return
 
+        # считаем статистику по уровням
+        po_urovnyam = {}
+        for z in zapisi:
+            po_urovnyam[z.uroven] = po_urovnyam.get(z.uroven, 0) + 1
+
         print(f"\n{'=' * 50}")
         print(f"  {zagolovok} ({len(zapisi)} записей)")
+        print(f"  Уровни: " + " | ".join(f"{k}:{v}" for k, v in po_urovnyam.items()))
         print(f"{'=' * 50}")
         for z in zapisi:
             print(f"  {z}")
