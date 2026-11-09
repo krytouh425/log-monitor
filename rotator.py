@@ -8,7 +8,7 @@ from datetime import datetime
 
 MAKS_RAZMER_MB = 50       # максимальный размер файла в МБ
 MAKS_KOLICHESTVO = 10     # максимум файлов в ротации
-
+PREDUPREZHDENIE_MB = 40   # предупреждение при достижении 40 МБ
 
 class RotatorLogov:
     def __init__(self, filepath):
