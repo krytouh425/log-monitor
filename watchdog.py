@@ -39,6 +39,7 @@ class WatchdogLoga:
         self._proverit_fayl()
         iteratsiy = 0
         print(f"Watchdog запущен — слежу за {self.filepath}")
+        print(f"Интервал проверки: {self.interval} сек.")
         print("Для остановки нажмите Ctrl+C\n")
 
         try:
@@ -46,6 +47,10 @@ class WatchdogLoga:
                 novye = self._chitat_novye_stroki()
                 for stroka in novye:
                     self._obrabotit_stroku(stroka)
+
+                if novye:
+                    print(f"[{datetime.now().strftime('%H:%M:%S')}] "
+                          f"Обработано новых строк: {len(novye)}")
 
                 iteratsiy += 1
                 if max_iteratsiy and iteratsiy >= max_iteratsiy:
@@ -55,4 +60,5 @@ class WatchdogLoga:
 
         except KeyboardInterrupt:
             print(f"\nWatchdog остановлен")
+            print(f"Итераций выполнено: {iteratsiy}")
             print(f"Обнаружено ошибок за сессию: {self.schetchik_oshibok}")
